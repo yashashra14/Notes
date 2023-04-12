@@ -13,7 +13,7 @@ class DbProvider {
   Database? db;
   void init() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    final path = join(directory.path, "notes5.db");
+    final path = join(directory.path, "notes10.db");
     db = await openDatabase(
       path,
       version: 1,

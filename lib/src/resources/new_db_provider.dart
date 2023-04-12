@@ -17,7 +17,7 @@ class DatabaseProvider {
   }
 
   initDb() async {
-    return await openDatabase(join(await getDatabasesPath(), "note_app.db"),
+    return await openDatabase(join(await getDatabasesPath(), "note_app1.db"),
         onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE notes (

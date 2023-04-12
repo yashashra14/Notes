@@ -4,6 +4,7 @@ import 'package:notes/src/screens/note_detail.dart';
 import 'bloc/provider.dart';
 import 'screens/notes.dart';
 import 'resources/db_provider.dart';
+import 'screens/note_new.dart';
 
 class App extends StatelessWidget {
   @override
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
     if (settings.name == '/') {
       return MaterialPageRoute(
         builder: (context) {
-          return Notes();
+          return NotesNew();
         },
       );
     } else {
