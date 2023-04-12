@@ -5,14 +5,13 @@ import '../resources/new_db_provider.dart';
 import '../models/item_model.dart';
 
 class NotesDetail extends StatelessWidget {
-  addNote(ItemModel itemModel) {
-    DatabaseProvider.db.addNewNote(itemModel);
-    print("note added successfully");
+  void addNote(ItemModel itemModel) async {
+    await DatabaseProvider.db.addNewNote(itemModel);
+    print('successfully added item');
   }
 
-  Future<List<Map<String, dynamic>>> getNotes() async {
-    Future<List<Map<String, dynamic>>> notes =
-        await DatabaseProvider.db.getNotes();
+  Future<List<Map<String, Object?>>> getNotes() async {
+    List<Map<String, Object?>> notes = await DatabaseProvider.db.getNotes();
     return notes;
   }
 
@@ -27,7 +26,7 @@ class NotesDetail extends StatelessWidget {
       title = event;
     });
     StreamSubscription<String> contentStream = bloc.content.listen((event) {
-      title = event;
+      content = event;
     });
     return Scaffold(
       appBar: AppBar(
@@ -36,13 +35,14 @@ class NotesDetail extends StatelessWidget {
         foregroundColor: Colors.black,
         actions: [
           IconButton(
-              padding: const EdgeInsets.only(right: 16),
-              onPressed: () {
-                onConfirmTapped(bloc, context);
-              },
-              icon: const Icon(
-                Icons.check,
-              ))
+            padding: const EdgeInsets.only(right: 16),
+            onPressed: () {
+              onConfirmTapped(bloc, context);
+            },
+            icon: const Icon(
+              Icons.check,
+            ),
+          )
         ],
       ),
       body: Container(
@@ -107,13 +107,11 @@ class NotesDetail extends StatelessWidget {
 
   onConfirmTapped(Bloc bloc, BuildContext context) {
     final ItemModel item = ItemModel(
-      id: itemId,
       title: title,
       subtile: content,
     );
     print(item.title);
     addNote(item);
-    getNotes();
-    Navigator.pop(context);
+    Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
   }
 }

@@ -7,8 +7,8 @@ class NotesNew extends StatefulWidget {
 }
 
 class StateNotesNew extends State<NotesNew> {
-  Future<List<Map<String, dynamic>>?> getNotes() async {
-    Future<List<Map<String, dynamic>>> notes =
+  Future<List<Map<String, Object?>>> getNotes() async {
+    Future<List<Map<String, Object?>>> notes =
         await DatabaseProvider.db.getNotes();
     return notes;
   }
@@ -19,51 +19,53 @@ class StateNotesNew extends State<NotesNew> {
       appBar: AppBar(
         title: Text("Your Notes"),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.pushNamed(context, '/1');
+        },
+      ),
       body: FutureBuilder(
         future: getNotes(),
-        builder:
-            (context, AsyncSnapshot<List<Map<String, dynamic>>?> snapshot) {
+        builder: (context, AsyncSnapshot<List<Map<String, Object?>>> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
             case ConnectionState.done:
               {
-                if (snapshot.data == Null) {
-                  return Center(
+                print(snapshot.hasData ? 'Yes' : "No");
+                if (!snapshot.hasData) {
+                  return const Center(
                     child: Text("You dont have any notes yet, create one"),
                   );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ListView.builder(
-                      itemCount: snapshot.hasData ? snapshot.data?.length : 0,
-                      itemBuilder: (context, index) {
-                        String title = snapshot.data![index]['title'];
-                        String body = snapshot.data![index]['body'];
-                        int id = snapshot.data![index]['id'];
-                        return Card(
-                          child: ListTile(
-                            title: Text(title),
-                            subtitle: Text(body),
-                          ),
-                        );
-                      },
-                    ),
-                  );
                 }
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: ListView.builder(
+                    itemCount: snapshot.hasData ? snapshot.data?.length : 0,
+                    itemBuilder: (context, index) {
+                      String title = snapshot.data![index]['title'] as String;
+                      String body = snapshot.data![index]['body'] as String;
+                      int id = snapshot.data![index]['id'] as int;
+                      return Card(
+                        child: ListTile(
+                          title: Text(title),
+                          subtitle: Text(body),
+                        ),
+                      );
+                    },
+                  ),
+                );
               }
             case ConnectionState.none:
-              // TODO: Handle this case.
-              break;
+              return const Center(child: CircularProgressIndicator());
             case ConnectionState.active:
-              // TODO: Handle this case.
-              break;
+              return const Center(child: CircularProgressIndicator());
           }
-          return CircularProgressIndicator();
         },
       ),
     );

@@ -19,7 +19,7 @@ class NotesState extends State<Notes> {
   }
 
   List<Widget> children = [];
-  var itemCount = 0;
+  var itemCount;
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of(context);
@@ -104,6 +104,12 @@ class NotesState extends State<Notes> {
                 );
               }
             }
+          case ConnectionState.none:
+            // TODO: Handle this case.
+            break;
+          case ConnectionState.active:
+            // TODO: Handle this case.
+            break;
         }
         return Scaffold(
           appBar: AppBar(

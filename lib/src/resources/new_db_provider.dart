@@ -17,7 +17,7 @@ class DatabaseProvider {
   }
 
   initDb() async {
-    return await openDatabase(join(await getDatabasesPath(), "note_app1.db"),
+    return await openDatabase(join(await getDatabasesPath(), "note_app2.db"),
         onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE notes (
@@ -33,16 +33,26 @@ class DatabaseProvider {
     final db = await database;
     db.insert("notes", item.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+    var res = await db.query("notes");
+    if (res.length == 0) {
+      print("dbEmpty");
+    } else {
+      var resultMap = res.toList();
+      resultMap.isNotEmpty
+          ? print(resultMap.toList().toString())
+          : print('result empty');
+    }
   }
 
   Future<dynamic> getNotes() async {
     final db = await database;
     var res = await db.query("notes");
     if (res.length == 0) {
-      return Null;
+      return null;
     } else {
       var resultMap = res.toList();
-      return resultMap.isNotEmpty ? resultMap : Null;
+      print(resultMap.toList().toString());
+      return resultMap.isNotEmpty ? resultMap : null;
     }
   }
 }

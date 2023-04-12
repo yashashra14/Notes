@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 class DbProvider {
   DbProvider() {
     init();
-    print('database created');
   }
   Database? db;
   void init() async {

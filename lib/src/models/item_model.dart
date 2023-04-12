@@ -10,10 +10,10 @@ class ItemModel {
   ItemModel({this.id, this.title, this.subtile});
 
   Map<String, dynamic> toMap() {
-    return (<String, dynamic>{
+    return ({
       "id": id,
       "title": title,
-      "subtitle": subtile,
+      "body": subtile,
     });
   }
 }
