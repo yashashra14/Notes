@@ -8,8 +8,7 @@ class NotesNew extends StatefulWidget {
 
 class StateNotesNew extends State<NotesNew> {
   Future<List<Map<String, Object?>>> getNotes() async {
-    Future<List<Map<String, Object?>>> notes =
-        await DatabaseProvider.db.getNotes();
+    List<Map<String, Object?>> notes = await DatabaseProvider.db.getNotes();
     return notes;
   }
 
@@ -37,7 +36,6 @@ class StateNotesNew extends State<NotesNew> {
               }
             case ConnectionState.done:
               {
-                print(snapshot.hasData ? 'Yes' : "No");
                 if (!snapshot.hasData) {
                   return const Center(
                     child: Text("You dont have any notes yet, create one"),

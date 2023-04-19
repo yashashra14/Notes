@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:notes/src/bloc/provider.dart';
-import 'package:notes/src/models/item_model.dart';
-import '../resources/db_provider.dart';
 import '../resources/new_db_provider.dart';
 import '../widgets/notes_list_tile.dart';
 
@@ -12,9 +10,8 @@ class Notes extends StatefulWidget {
 }
 
 class NotesState extends State<Notes> {
-  Future<List<Map<String, dynamic>>> getNotes() async {
-    Future<List<Map<String, dynamic>>> notes =
-        await DatabaseProvider.db.getNotes();
+  Future<List<Map<String, Object?>>> getNotes() async {
+    List<Map<String, Object?>> notes = await DatabaseProvider.db.getNotes();
     return notes;
   }
 
@@ -25,7 +22,7 @@ class NotesState extends State<Notes> {
     final bloc = Provider.of(context);
     return FutureBuilder(
       future: getNotes(),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+      builder: (context, AsyncSnapshot<List<Map<String, Object?>>> snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
             {
@@ -57,20 +54,20 @@ class NotesState extends State<Notes> {
                 );
               } else {
                 return ListView.builder(
-                  itemCount: snapshot.data!.length,
+                  itemCount: snapshot.data?.length,
                   itemBuilder: (context, int index) {
                     bloc.fetchItem(index);
                     return Scaffold(
                       appBar: AppBar(
                         title: Text(
-                          'Notes ${snapshot.data!.length}',
+                          'Notes ${snapshot.data?.length}',
                           style: const TextStyle(color: Colors.black),
                         ),
                         backgroundColor: Colors.amber,
                       ),
                       floatingActionButton: FloatingActionButton(
                         onPressed: () {
-                          itemCount = snapshot.data!.length;
+                          itemCount = snapshot.data?.length;
                           Navigator.pushNamed(context, "/$itemCount");
                         },
                         child: const Icon(Icons.add),
@@ -105,22 +102,32 @@ class NotesState extends State<Notes> {
               }
             }
           case ConnectionState.none:
-            // TODO: Handle this case.
-            break;
+            {
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text('Notes'),
+                ),
+                body: const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.amber,
+                  ),
+                ),
+              );
+            }
           case ConnectionState.active:
-            // TODO: Handle this case.
-            break;
+            {
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text('Notes'),
+                ),
+                body: const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.amber,
+                  ),
+                ),
+              );
+            }
         }
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Notes'),
-          ),
-          body: const Center(
-            child: CircularProgressIndicator(
-              color: Colors.amber,
-            ),
-          ),
-        );
       },
     );
   }
