@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:notes/src/models/item_model.dart';
 import 'package:notes/src/screens/note_detail.dart';
 import 'bloc/provider.dart';
-import 'screens/notes.dart';
-import 'resources/db_provider.dart';
-import 'screens/note_new.dart';
+import 'screens/note.dart';
 
 class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Provider(
@@ -23,7 +22,7 @@ class App extends StatelessWidget {
     if (settings.name == '/') {
       return MaterialPageRoute(
         builder: (context) {
-          return NotesNew();
+          return Notes();
         },
       );
     } else {

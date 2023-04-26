@@ -36,9 +36,10 @@ class DbProvider {
       where: "id =?",
       whereArgs: [id],
     );
-    if (maps.length > 0) {
+    if (maps.isNotEmpty) {
       return ItemModel.fromDb(maps.first);
     }
+    return null;
   }
 
   Future<int> fetchTopIds() async {
@@ -60,5 +61,6 @@ class DbProvider {
 
   Future<int>? clear() {
     db!.delete("Note");
+    return null;
   }
 }

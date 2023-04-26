@@ -1,7 +1,6 @@
 import 'package:notes/src/models/item_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 class DatabaseProvider {
   DatabaseProvider._();
@@ -56,7 +55,7 @@ class DatabaseProvider {
   Future<dynamic> getNotes() async {
     final db = await database;
     var res = await db.query("notes");
-    if (res.length == 0) {
+    if (res.isEmpty) {
       return null;
     } else {
       var resultMap = res.toList();
@@ -72,11 +71,20 @@ class DatabaseProvider {
       where: "id =?",
       whereArgs: [itemId],
     );
-    if (res.length == 0) {
+    if (res.isEmpty) {
       return null;
     } else {
       ItemModel itemModel = ItemModel.fromDb(res.first);
       return itemModel;
     }
+  }
+
+  Future<void> deleteItem(int itemId) async{
+    final db = await database;
+    await db.delete(
+      "notes",
+      where: "id =?",
+      whereArgs: [itemId],
+    );
   }
 }

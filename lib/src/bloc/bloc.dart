@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import '../resources/db_provider.dart';
 import '../models/item_model.dart';
-import '../resources/db_provider.dart';
 
 class Bloc {
   final dbProvider = DbProvider();

@@ -4,6 +4,7 @@ import '../bloc/provider.dart';
 import '../resources/new_db_provider.dart';
 import '../models/item_model.dart';
 
+// ignore: must_be_immutable
 class NotesDetail extends StatelessWidget {
   void addNote(ItemModel itemModel) async {
     await DatabaseProvider.db.addNewNote(itemModel);
@@ -26,10 +27,12 @@ class NotesDetail extends StatelessWidget {
   final int? itemId;
   String title = '';
   String content = '';
-  NotesDetail({this.itemId});
+
+  NotesDetail({Key? key, this.itemId}) : super(key: key);
 
   TextEditingController titleEditingController = TextEditingController();
   TextEditingController contentEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of(context);
@@ -41,7 +44,7 @@ class NotesDetail extends StatelessWidget {
     // });
     return Scaffold(
       appBar: AppBar(
-        title: Text('${itemId}'),
+        title: const Text('Edit Note'),
         backgroundColor: Colors.amber,
         foregroundColor: Colors.black,
         actions: [
@@ -157,14 +160,16 @@ class NotesDetail extends StatelessWidget {
   }
 
   onConfirmTapped(Bloc bloc, BuildContext context) {
-    title = titleEditingController.text;
-    content = contentEditingController.text;
-    final ItemModel item = ItemModel(
-      id: itemId,
-      title: title,
-      subtile: content,
-    );
-    editNote(item);
+    title = titleEditingController.text.trim();
+    content = contentEditingController.text.trim();
+    if (title.isNotEmpty || content.isNotEmpty) {
+      final ItemModel item = ItemModel(
+        id: itemId,
+        title: title,
+        subtile: content,
+      );
+      editNote(item);
+    }
     Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
   }
 }

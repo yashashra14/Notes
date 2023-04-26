@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:notes/src/bloc/provider.dart';
-import '../models/item_model.dart';
-import '../resources/db_provider.dart';
-import '../resources/new_db_provider.dart';
 
 class NotesListtile extends StatelessWidget {
   List<Map<String, dynamic>> item;
@@ -11,10 +7,10 @@ class NotesListtile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String title = item[itemId]['title'];
-    String subtitle = item[itemId]['id'];
+    String subtitle = item[itemId]['body'];
     return ListTile(
       title: Text(title),
-      subtitle: Text(item[itemId]['body']),
+      subtitle: Text(subtitle),
     );
   }
 }
