@@ -7,7 +7,10 @@ import '../models/item_model.dart';
 class NotesDetail extends StatelessWidget {
   void addNote(ItemModel itemModel) async {
     await DatabaseProvider.db.addNewNote(itemModel);
-    print('successfully added item');
+  }
+
+  void editNote(ItemModel itemModel) async {
+    await DatabaseProvider.db.editItem(itemModel);
   }
 
   Future<List<Map<String, Object?>>> getNotes() async {
@@ -15,19 +18,27 @@ class NotesDetail extends StatelessWidget {
     return notes;
   }
 
+  Future<ItemModel?> getItem(int id) async {
+    ItemModel? itemModel = await DatabaseProvider.db.fetchItem(id);
+    return itemModel;
+  }
+
   final int? itemId;
   String title = '';
   String content = '';
   NotesDetail({this.itemId});
+
+  TextEditingController titleEditingController = TextEditingController();
+  TextEditingController contentEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of(context);
-    StreamSubscription<String> titleStream = bloc.title.listen((event) {
-      title = event;
-    });
-    StreamSubscription<String> contentStream = bloc.content.listen((event) {
-      content = event;
-    });
+    // StreamSubscription<String> titleStream = bloc.title.listen((event) {
+    //   title = event;
+    // });
+    // StreamSubscription<String> contentStream = bloc.content.listen((event) {
+    //   content = event;
+    // });
     return Scaffold(
       appBar: AppBar(
         title: Text('${itemId}'),
@@ -45,25 +56,61 @@ class NotesDetail extends StatelessWidget {
           )
         ],
       ),
-      body: Container(
-        margin: const EdgeInsets.all(16),
-        child: Expanded(
-          child: Column(
-            children: [
-              titleField(bloc),
-              contentField(bloc),
-            ],
-          ),
-        ),
+      body: FutureBuilder(
+        future: getItem(itemId!),
+        builder: (context, AsyncSnapshot<ItemModel?> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              {
+                return Container(
+                  margin: const EdgeInsets.all(16),
+                  child: Expanded(
+                    child: Column(
+                      children: [
+                        titleField(bloc),
+                        contentField(bloc),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            case ConnectionState.none:
+              {
+                return const Center(child: Text("None"));
+              }
+            case ConnectionState.active:
+              {
+                return const Center(child: Text("Active"));
+              }
+            case ConnectionState.done:
+              {
+                return Container(
+                  margin: const EdgeInsets.all(16),
+                  child: Expanded(
+                    child: Column(
+                      children: [
+                        titleField(bloc, title: snapshot.data?.title),
+                        contentField(bloc, content: snapshot.data?.subtile),
+                      ],
+                    ),
+                  ),
+                );
+              }
+          }
+        },
       ),
     );
   }
 
-  Widget titleField(bloc) {
+  Widget titleField(Bloc bloc, {String? title}) {
+    titleEditingController.text = title ?? "";
+    titleEditingController.selection = TextSelection.fromPosition(
+        TextPosition(offset: titleEditingController.text.length));
     return StreamBuilder(
       stream: bloc.title,
       builder: (context, snapshot) {
         return TextField(
+          controller: titleEditingController,
           onChanged: bloc.changeTitle,
           decoration: const InputDecoration(
             hintText: 'Title',
@@ -84,15 +131,19 @@ class NotesDetail extends StatelessWidget {
     );
   }
 
-  Widget contentField(bloc) {
+  Widget contentField(Bloc bloc, {String? content}) {
+    contentEditingController.text = content ?? "";
+    contentEditingController.selection = TextSelection.fromPosition(
+        TextPosition(offset: contentEditingController.text.length));
     return StreamBuilder(
       stream: bloc.content,
       builder: (context, snapshot) {
         return Expanded(
           child: TextField(
+            autofocus: true,
+            controller: contentEditingController,
             maxLines: 999999999,
             keyboardType: TextInputType.multiline,
-            autofocus: true,
             scrollPadding: const EdgeInsets.all(16),
             onChanged: bloc.changeContent,
             decoration: const InputDecoration(
@@ -106,12 +157,14 @@ class NotesDetail extends StatelessWidget {
   }
 
   onConfirmTapped(Bloc bloc, BuildContext context) {
+    title = titleEditingController.text;
+    content = contentEditingController.text;
     final ItemModel item = ItemModel(
+      id: itemId,
       title: title,
       subtile: content,
     );
-    print(item.title);
-    addNote(item);
+    editNote(item);
     Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
   }
 }

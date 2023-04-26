@@ -33,14 +33,23 @@ class DatabaseProvider {
     final db = await database;
     db.insert("notes", item.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
-    var res = await db.query("notes");
-    if (res.length == 0) {
-      print("dbEmpty");
+  }
+
+  editItem(ItemModel item) async {
+    final db = await database;
+    int? count =
+        Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM notes'));
+    if (item.id! > count!) {
+      db.insert("notes", item.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
     } else {
-      var resultMap = res.toList();
-      resultMap.isNotEmpty
-          ? print(resultMap.toList().toString())
-          : print('result empty');
+      await db.update(
+        "notes",
+        item.toMap(),
+        where: "id =?",
+        whereArgs: [item.id],
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
     }
   }
 
@@ -51,8 +60,23 @@ class DatabaseProvider {
       return null;
     } else {
       var resultMap = res.toList();
-      print(resultMap.toList().toString());
       return resultMap.isNotEmpty ? resultMap : null;
+    }
+  }
+
+  Future<ItemModel?> fetchItem(int itemId) async {
+    final db = await database;
+    var res = await db.query(
+      "notes",
+      columns: null,
+      where: "id =?",
+      whereArgs: [itemId],
+    );
+    if (res.length == 0) {
+      return null;
+    } else {
+      ItemModel itemModel = ItemModel.fromDb(res.first);
+      return itemModel;
     }
   }
 }

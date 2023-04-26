@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes/src/models/item_model.dart';
 import '../resources/new_db_provider.dart';
 
 class NotesNew extends StatefulWidget {
@@ -12,16 +13,18 @@ class StateNotesNew extends State<NotesNew> {
     return notes;
   }
 
+  int count = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Your Notes"),
+        title: const Text("Your Notes"),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.pushNamed(context, '/1');
+          Navigator.pushNamed(context, '/${count + 1}');
         },
       ),
       body: FutureBuilder(
@@ -41,6 +44,7 @@ class StateNotesNew extends State<NotesNew> {
                     child: Text("You dont have any notes yet, create one"),
                   );
                 }
+                count = snapshot.hasData ? snapshot.data!.length : 0;
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: ListView.builder(
@@ -51,6 +55,9 @@ class StateNotesNew extends State<NotesNew> {
                       int id = snapshot.data![index]['id'] as int;
                       return Card(
                         child: ListTile(
+                          onTap: () {
+                            Navigator.pushNamed(context, "/$id");
+                          },
                           title: Text(title),
                           subtitle: Text(body),
                         ),
